@@ -1,0 +1,17 @@
+{
+  "name": "popperoo",
+  "version": "1.0.0",
+  "description": "A crowdsourced web app to see how many and which people are going to the venues in your area - build with Node, Express, MongoDB, Angular JS and the Yelp API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "mongodb": "^2.1.6"
+  }
+}
