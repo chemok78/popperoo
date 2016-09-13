@@ -107,6 +107,31 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
       });
 
   }); //app.get("/search/:location", function(req, res) 
+  
+   app.get("/geo/:lat/:long", function(req, res) {
+    //send GET http request to Yelp API with latitude and longitude
+    //called from Venues service in Angular JS, getVenuesGeo method
 
+    yelp.search({
+        ll: req.params.lat + ',' + req.params.long,
+        limit: 20,
+        category_filter: 'bars'
+      })
+      //see https://www.yelp.com/developers/documentation/v2/search_api for the options
+      //https://www.yelp.com/developers/documentation/v2/all_category_list for list of all the categories
+      .then(function(data) {
+        //gets data from Yelp and when ready sends in back to front end
+
+        res.status(200).json(data);
+
+      })
+      .catch(function(err) {
+
+        console.error(err);
+
+      });
+
+  }); //app.get("/search/:location", function(req, res) 
+  
 
 }); //mongodb.MongoClient.connect

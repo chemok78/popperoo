@@ -8,6 +8,7 @@
                     <input type="text" class="form-control" id="locationInput" placeholder="Where to search?" ng-model="mylocation">
                 </div>
                 <button type="submit" class="btn btn-default btn-primary" ng-click="searchLocation(mylocation)">Go</button>
+                <button type="submit" class="btn btn-default btn-primary" ng-click="geoLocation()">Use my location</button>
                 <!--call $scope.searchLocation(location) with ng-click and add data to $scope.venues-->
             </form>
         </div>
