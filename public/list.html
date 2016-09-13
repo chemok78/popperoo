@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="jumbotron">
+        <div class="container page-header">
+            <h2 class="text-center">Your plans tonight?</h2>
+            <p class="text-center">Discover what bars, clubs, restaurants and other venues are poppin in real-time. Enter your location and see how many people and who is going to the bars nearby</p>
+            <form class="form-inline text-center" name="venueSearch" novalidate>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="locationInput" placeholder="Where to search?" ng-model="mylocation">
+                </div>
+                <button type="submit" class="btn btn-default btn-primary" ng-click="searchLocation(mylocation)">Go</button>
+                <!--call $scope.searchLocation(location) with ng-click and add data to $scope.venues-->
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <ul class="list-group">
+            <li ng-repeat="venue in venues.businesses" class="list-group-item">
+                <img src="{{venue.image_url}}" class="img-thumbnail img-responsive img-rounded">
+                <span class="badge">0 going</span>
+                <a href="{{venue.url}}" target="_blank">{{venue.name}}</a>
+                <p>{{venue.snippet_text}}</p>
+            </li>
+        </ul>
+    </div>
+</div>
