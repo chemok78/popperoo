@@ -96,8 +96,72 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
       //https://www.yelp.com/developers/documentation/v2/all_category_list for list of all the categories
       .then(function(data) {
         //gets data from Yelp and when ready sends in back to front end
-
-        res.status(200).json(data);
+        
+        /*Extract the relevant data before sending response to front end*/
+        
+        var venuesData = [ ];
+        
+        data.businesses.forEach(function(value){
+        //loop through businesses array of objects
+        //select only the relevant properties to work with in front-end
+        
+          var venueObject = { };
+          
+          venueObject.name = value.name;
+          venueObject.url = value.url;
+          venueObject.snippet_text = value.snippet_text;
+          venueObject.image_url = value.image_url;
+          
+          //check in database if name and url exists
+          venuesData.push(venueObject);
+          
+        });
+        
+        var query = venuesData.map(function(item){
+        //make new array with only the name and url properties to query database with
+          return { name: item.name, url: item.url};
+          
+        });
+        
+        
+        db.collection(VENUES_COLLECTION).find({"$or":query}).toArray(function(err,doc){
+        //get an array of the venues that exist in the database
+        //find returns a cursor and use toArray to convert to array 
+        
+          if(err) {
+            
+            handleError(res,err.message, "Failed to find venues");
+            
+          } else {
+          //loop through doc array from database 
+          //for every object of doc array loop through venuesObject and check if name and url are the same
+            
+            for(var i = 0; i < doc.length; i++){
+              
+              for (var j = 0; j < venuesData.length; j++){
+                
+                if ((venuesData[j].name === doc[i].name) && (venuesData[j].url === doc[i].url)){
+                //if object from doc array matches object from venuesObject, replace the object with the one in database
+                  
+                  venuesData[j] = doc[i];
+                  
+                }
+                
+                
+              }//venuesData for loop
+              
+              
+            }//doc for loop
+            
+          
+          res.status(200).json(venuesData);
+          //send the venuesData object with checked database to frontend as JSON object
+            
+          }
+          
+          
+        });
+        
 
       })
       .catch(function(err) {
