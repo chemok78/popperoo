@@ -184,6 +184,7 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
   db = database;
   //save global db variable as database instance
+  
   console.log("successfully connected to database");
 
   var server = app.listen(process.env.PORT || 8080, function() {
@@ -406,49 +407,49 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
   }); //app.get("/search/:location", function(req, res) 
 
   app.get("/venues/:name", auth, function(req, res) {
-    //route for retrieving a venue and manipulate data  
-
-    //console.log(req.params.name);
-
-    //console.log(req.user);
-
-    //console.log(req.user._json);
-
+  //route for retrieving a venue and manipulate data
+  //called from checkGoing Angular JS Service with the name of the venue as parameter
+  //data available is req.params.name, req.user, req.user._json)
 
     db.collection(VENUES_COLLECTION).findOne({
       "name": req.params.name
     }, function(err, doc) {
-      //check if venue exists in database with the venue name in URL parameter
+      //check if venue exists in database with the name in URL parameter
 
       if (err) {
-        //handle and show error when db search fails  
+      //handle and show error when db search fails  
 
         handleError(res, err.message, "Failed to get venue");
 
       } else {
-        //no error, check if venue is matched
-
-        //console.log(doc);
+      //no error, check if venue is matched
+      //MongoDB returns the venue as doc variable
 
         if (doc == null) {
           //no venue is found
           //add venue to database, set going to 1, add user to array
-
-          console.log(venuesSave);
+          //the venue object with ALL venues is saved in global venuesSave variable 
 
           var venueDB = {};
+          //local variable to hold venue object to be inserted in DB
 
           for (var h = 0; h < venuesSave.length; h++) {
+          //loop through venuesSave object with all venues  
 
             if (venuesSave[h].name === req.params.name) {
-
+            //if the venue.name matches the name from the URL parameter
+            
               venueDB = venuesSave[h];
+              //set the venue from all venues object to local venueDB
               
               venueDB.going = 1;
+              //add going and set to 1
               
               venueDB.users = [];
+              //add empty users object
 
               venueDB.users.push(req.user._json);
+              //push the json object with name and id from req.user
 
 
             }
@@ -457,6 +458,7 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
           }
 
           db.collection(VENUES_COLLECTION).insertOne(venueDB, function(err, doc) {
+          //insert the edited venueDB object in the database
 
             if (err) {
 
@@ -464,15 +466,11 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
             } else {
 
-              console.log("venue inserted");
-              
-              console.log(doc.ops[0]);
-              
-              //set venueDB with user object to be inserted in DB to empty object again
-
               res.status(201).json(doc.ops[0]);
+              //send the inserted venue object back to front-end 
               
               venueDB = {};
+              //set venueDB with user object to be inserted in DB to empty object again
 
 
             }
@@ -485,20 +483,17 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
         
           console.log("a venue is found");
 
-          
-          //check if user exists with req.user
-          //if no + 1 going and add user to array
-          //if yes - 1 going and remove user from array
-
           var found = false;
+          //global variable to hold if user is found or not
 
           var index = 0;
+          //global variable for the position in users array
 
           for (var i = 0; i < doc.users.length; i++) {
-            //loop through doc.users array and check if req.user.id can be found
+          //loop through doc.users array and check if req.user.id can be found
 
             if (doc.users[i].id == req.user.id) {
-              //user is found  
+            //user is found  
 
               console.log("we found the user!:" + " " + doc.users[i].name);
 
@@ -509,13 +504,11 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
             }
 
-          } //for loop
+          } 
 
-
-          //manipulate doc here, to save later in database
 
           if (found === true) {
-            //user is found: remove the user now  
+          //user is found: remove the user 
 
             doc.going = doc.going - 1;
             //add one to to going property of doc variable
@@ -526,21 +519,17 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
           } else {
             //user is not found: add the user  
 
-            console.log("we could not find the user!");
-
             doc.going = doc.going + 1;
             //remove one from going property of doc variable
 
             doc.users.push(req.user._json);
             //add element to doc.users
 
-          } //if found is true or not
+          } 
 
-          console.log(doc);
           
           var editedDoc = doc;
-
-          //replace the venue in the database with doc
+          //variable to hold the edited doc with added or deleted user
 
           if (doc.users.length === 0) {
             //if users array is empty, remove the venue from the database
@@ -559,12 +548,13 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
                 console.log("venue deleted");
                 
-                 res.status(200).json(editedDoc);
+                res.status(200).json(editedDoc);
+                //deleteOne doesnt return a doc from database. Use editedDoc to send the edited venue object back to front end
 
 
               }
 
-            }); //db.collection(VENUES_COLLECTION).deleteOne
+            }); 
 
 
           } else {
@@ -582,9 +572,8 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
               } else {
 
-                res.status(200).json(doc);
-
-                console.log("venue replaced");
+                res.status(200).json(doc.ops[0]);
+                
 
               }
 
@@ -593,13 +582,13 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
 
           }
 
-        } //if(doc == null) else
+        } 
 
 
-      } // if(err) else
+      } 
 
-    }); //db.collection(VENUES_COLLECTION).findOne
+    }); 
 
-  }); //app.get("/venues/:name"
+  }); 
 
-}); //mongodb.MongoClient.connect
+}); 

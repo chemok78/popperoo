@@ -20,7 +20,10 @@
                 <span class="badge" ng-click="findGoing(venue.name)">{{venue.going}} going</span>
                 <a href="{{venue.url}}" target="_blank">{{venue.name}}</a>
                 <p>{{venue.snippet_text}}</p>
-                <p>{{venue.users}}</p>
+                <div class="container">
+                    <h4>Who's going?</h4>
+                    <span class="badge" ng-repeat="user in venue.users">{{user.name}}</span>
+                </div>
             </li>
         </ul>
     </div>

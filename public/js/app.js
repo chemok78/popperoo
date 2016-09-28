@@ -68,8 +68,6 @@ angular.module("popperooApp", ['ngRoute'])
             
             var checkURL = "venues/" + name;
             
-            //console.log(checkURL);
-            
             return $http.get(checkURL);
             
         };
@@ -128,6 +126,7 @@ angular.module("popperooApp", ['ngRoute'])
            .then(function(response){
                
                for(var i=0; i < $scope.venues.length; i++){
+               //find the venue in $scope.venues that matches the venue object from back end       
                    
                    if($scope.venues[i].name == response.data.name){
                        
@@ -139,7 +138,7 @@ angular.module("popperooApp", ['ngRoute'])
                
            }, function(response){
                
-               console.log("Errorrrr finding venue");
+               console.log("Error finding venue");
                
            });   
         
