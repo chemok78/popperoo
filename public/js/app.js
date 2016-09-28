@@ -58,9 +58,19 @@ angular.module("popperooApp", ['ngRoute'])
         
         this.getVenuesGeo = function(){
             
-            
             return $http.get(geoURL);
             //call RESTful API with current location
+            
+        };
+        
+        this.checkGoing = function(name){
+        //method to check and manipulate if any users are going, who are going and how many 
+            
+            var checkURL = "venues/" + name;
+            
+            //console.log(checkURL);
+            
+            return $http.get(checkURL);
             
         };
         
@@ -101,7 +111,6 @@ angular.module("popperooApp", ['ngRoute'])
               
                 $scope.venues = response.data;
   
-                
             }, function(response){
                 
                 alert("Error retrieving venues with your location");
@@ -110,5 +119,58 @@ angular.module("popperooApp", ['ngRoute'])
             
             
         };
-    });
-
+        
+        
+        $scope.findGoing = function(name) {
+          
+          Venues.checkGoing(name)
+          //get the name and URL from the venue clicked
+           .then(function(response){
+               
+               for(var i=0; i < $scope.venues.length; i++){
+                   
+                   if($scope.venues[i].name == response.data.name){
+                       
+                       $scope.venues[i] = response.data;
+                       
+                   }
+                   
+               }
+               
+           }, function(response){
+               
+               console.log("Errorrrr finding venue");
+               
+           });   
+        
+        };
+    })
+    .service('authInterceptor', function($q) {
+    //service to intercept a 401 response from Express REST API if user is not authenticated for a protected endPoint  
+        
+        var service = this;
+    
+        service.responseError = function(response) {
+        //make a authIntercepter.responseError() method that takes a server response   
+            
+            if (response.status == 401){
+            //if response error status is 401 redirect to login URL 
+                
+                window.location = "/auth/facebook";
+            }
+            //if the response error status is something other than 401 reject the promise with the response
+            
+            return $q.reject(response);
+            
+        };
+    
+    })
+    .config(['$httpProvider', function($httpProvider) {
+    //add authInterceptor service to httpProvider so its used in    
+        
+        $httpProvider.interceptors.push('authInterceptor');
+        
+    }]);
+    
+    
+    
