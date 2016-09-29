@@ -36,6 +36,7 @@ var yelp = new Yelp({
 var VENUES_COLLECTION = "venues";
 //Set the variable VENUES_COllECTION to the string "venues" to use in mLabs
 
+
 var app = express();
 //create instance of express
 
@@ -213,6 +214,7 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
   app.get("/search/:location", function(req, res) {
     //send GET http request to Yelp API with the locatio as req.params.location
     //called from Venues service in Angular JS, getVenues method
+    
 
     yelp.search({
         location: req.params.location,
