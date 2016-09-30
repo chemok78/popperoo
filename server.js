@@ -65,7 +65,7 @@ passport.use(new FacebookStrategy({
 
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackURL: process.env.FACEBOOK_CALLLBACK_DEV
+  callbackURL: process.env.FACEBOOK_CALLLBACK_PRODUCTION
 
 }, function(accessToken, refreshToken, profile, done) {
   //callback function after sucessfull login
