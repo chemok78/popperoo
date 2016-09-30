@@ -1,7 +1,7 @@
 /*global angular*/
 /*global navigator*/
 
-angular.module("popperooApp", ['ngRoute'])
+angular.module("popperooApp", ['ngRoute', 'ngCookies'])
 //create ANgular app and inject ngRoute dependency
     .config(function($routeProvider){
        $routeProvider
@@ -9,6 +9,12 @@ angular.module("popperooApp", ['ngRoute'])
         //configure root route with routeProvider    
             templateUrl: "list.html",
             controller: "ListController"
+        })
+        .when("/reload/", {
+         
+            templateUrl: "list.html",
+            controller: "ReloadController"
+            
         })
         .otherwise({
            
@@ -50,7 +56,7 @@ angular.module("popperooApp", ['ngRoute'])
         //use location input from form as url parameter to call RESTful API
         //GET /search/:location
            
-          var url = "search/" + location;    
+          var url = "search/" + location; 
             
           return $http.get(url);  
             
@@ -74,16 +80,70 @@ angular.module("popperooApp", ['ngRoute'])
         
 
     })
-    .controller('ListController', function($scope, Venues){
+    .controller('ListController', function($scope, Venues, $cookieStore){
     //controller to show all venues
     //inject $scope
+    //controller is loaded and refreshed when page refreshes (happens after Passport JS login)
+    
+    var hasSearched = $cookieStore.get('hasSearched');
+    //retrieve from cookie if the user has searched yet or not
+    
+    var hasSearchedGeo = $cookieStore.get('hasSearchedGeo');
+    //retrieve from cookie if the user has searched on GeoLocation yet or not
+    
+    var locationQuery = $cookieStore.get('locationQuery');
+    //retrieve from cookie the previous location query
+    
+    if(hasSearched == true){
+    //if the user has searched before, use the query to automatically search again and set the scope
+        
+        Venues.getVenues(locationQuery)
+                .then(function(response){
+                    
+                    $scope.venues = response.data;
+                    //bind data to the $scope as venues property
+                    
+                }, function(response){
+                    
+                   alert("Error retrieving venues"); 
+                   
+                   console.log(response);
+                    
+                });
+                
+                $cookieStore.remove('hasSearched');
+            
+    }
+    
+    if(hasSearchedGeo == true){
+        
+        Venues.getVenuesGeo()
+            .then(function(response){
+              
+                $scope.venues = response.data;
+  
+            }, function(response){
+                
+                alert("Error retrieving venues with your location");
+                
+            });
+            
+        $cookieStore.remove('hasSearchedGeo');    
+        
+    }
+    
     
         $scope.searchLocation = function(location) {
         //attach a searchLocation method to the scope, called in form with ng-click="searchLocation(mylocation)"
+        //call getVenues depending on location entered or empty
             
-            //call getVenues depending on location entered or empty
+        //controller is re-loaded on every page reload. Happens after passport login. $scope.venues is then lost 
+        
+            $cookieStore.put('hasSearched', true);
+            //set cookie to store that user has searched before
             
-            console.log(location);
+            $cookieStore.put('locationQuery', location);
+            //set cookie to store the location query
             
             Venues.getVenues(location)
                 .then(function(response){
@@ -102,7 +162,9 @@ angular.module("popperooApp", ['ngRoute'])
         };
         
         $scope.geoLocation = function(){
-        //get YELP API data with current location    
+        //get YELP API data with current location  
+        
+        $cookieStore.put('hasSearchedGeo', true);
             
           Venues.getVenuesGeo()
             .then(function(response){
@@ -143,6 +205,26 @@ angular.module("popperooApp", ['ngRoute'])
            });   
         
         };
+        
+        
+    }).controller('ReloadController', function($scope,Venues){
+        
+        
+            /*Venues.getVenues($routeParams.query)
+                .then(function(response){
+                    
+                    $scope.venues = response.data;
+                    //bind data to the $scope as venues property
+                    
+                }, function(response){
+                    
+                   alert("Error retrieving venues"); 
+                   
+                   console.log(response);
+                    
+                });*/
+       
+        
     })
     .service('authInterceptor', function($q) {
     //service to intercept a 401 response from Express REST API if user is not authenticated for a protected endPoint  
@@ -155,7 +237,8 @@ angular.module("popperooApp", ['ngRoute'])
             if (response.status == 401){
             //if response error status is 401 redirect to login URL 
                 
-                window.location = "/auth/facebook";
+                 window.location = "/auth/facebook";
+                
             }
             //if the response error status is something other than 401 reject the promise with the response
             

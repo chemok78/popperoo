@@ -36,6 +36,7 @@ var yelp = new Yelp({
 var VENUES_COLLECTION = "venues";
 //Set the variable VENUES_COllECTION to the string "venues" to use in mLabs
 
+var searchQuery = "";
 
 var app = express();
 //create instance of express
@@ -75,7 +76,7 @@ passport.use(new FacebookStrategy({
     //return user profile after login
     // If the credentials are valid, the verify callback invokes done to supply Passport with the user that authenticated.
 
-  });
+   });
 
 
 }));
@@ -104,15 +105,16 @@ app.get('/auth/facebook', passport.authenticate('facebook'));
 //Authenticate with Passport when hitting this route
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {
-  //Handle callback after successfully authenticated woth Facebook  
+  //Handle callback after successfully authenticated with Facebook  
 
   successRedirect: '/',
+  
   failureRedirect: '/error'
 
 }));
 
 app.get('/success', function(req, res, next) {
-
+  
   res.send('You have successfully logged in. You can now close this window');
 
 });
@@ -215,6 +217,8 @@ mongodb.MongoClient.connect(process.env.DB_URL, function(err, database) {
     //send GET http request to Yelp API with the locatio as req.params.location
     //called from Venues service in Angular JS, getVenues method
     
+    searchQuery = req.params.location;
+  
 
     yelp.search({
         location: req.params.location,
