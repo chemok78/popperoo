@@ -2,5 +2,39 @@ body {
     
     padding-top: 90px;
     padding-bottom: 60px;
+    font-family: 'Rubik', sans-serif;
+    
+}
+
+.badge {
+    
+    padding: 10px;
+    
+}
+
+.badge-going {
+    
+    background-color: #e67e22;
+    
+}
+
+.badge-users {
+    
+    background-color: #3498db;
+    margin-left: 3px;
+    
+}
+
+.venue-name {
+    
+    font-weight: bold;
+    font-size: 1.5em;
+    
+}
+
+.list-group-item {
+    
+    background-color: #ecf0f1;
+    margin-bottom: 20px;
     
 }

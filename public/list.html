@@ -1,8 +1,8 @@
 <div class="container">
     <div class="jumbotron">
         <div class="container page-header">
-            <h2 class="text-center">Your plans tonight?</h2>
-            <p class="text-center">Discover what bars, clubs, restaurants and other venues are poppin in real-time. Enter your location and see how many people and who is going to the bars nearby</p>
+            <h2 class="text-center">Welcome to Popperoo</h2>
+            <p class="text-center">Discover what bars, clubs, restaurants and other venues are poppin in real-time. Enter your location and see how many people and who are going to the bars nearby</p>
             <form class="form-inline text-center" name="venueSearch" novalidate>
                 <div class="form-group">
                     <input type="text" class="form-control" id="locationInput" placeholder="Where to search?" ng-model="mylocation">
@@ -17,12 +17,13 @@
         <ul class="list-group">
             <li ng-repeat="venue in venues" class="list-group-item">
                 <img src="{{venue.image_url}}" class="img-thumbnail img-responsive img-rounded">
-                <span class="badge" ng-click="findGoing(venue.name)">{{venue.going}} going</span>
-                <a href="{{venue.url}}" target="_blank">{{venue.name}}</a>
+                <span class="badge badge-going" ng-click="findGoing(venue.name)">{{venue.going}} going</span>
+                <a href="{{venue.url}}" target="_blank" class="venue-name">{{venue.name}}</a>
+                <p></p>
                 <p>{{venue.snippet_text}}</p>
                 <div class="container">
                     <h4>Who's going?</h4>
-                    <span class="badge" ng-repeat="user in venue.users">{{user.name}}</span>
+                    <span class="badge badge-users" ng-repeat="user in venue.users">{{user.name}}</span>
                 </div>
             </li>
         </ul>
